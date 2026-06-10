@@ -1,12 +1,20 @@
 # Sealos 部署指南
 
-Sealos **不能直接部署 GitHub 源码**，需要先构建 Docker 镜像，再在控制台填写镜像地址。
+推荐先看 **[DEPLOY-GITHUB.md](./DEPLOY-GITHUB.md)**：从 GitHub 推送代码，由 GitHub Actions 自动构建镜像，无需本地 Docker。
+
+Sealos「应用部署」页面需要填写 **镜像地址**，不能直接填 GitHub 链接。
 
 本项目需要部署 **2 个应用**：后端 + 前端。
 
 ---
 
-## 第一步：构建并推送镜像
+## 方式 A：GitHub Actions 自动构建（推荐）
+
+见 [DEPLOY-GITHUB.md](./DEPLOY-GITHUB.md)。
+
+---
+
+## 方式 B：本地 Docker 构建
 
 安装 [Docker Desktop](https://www.docker.com/products/docker-desktop/) 后，在 PowerShell 执行：
 
