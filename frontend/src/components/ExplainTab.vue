@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import { marked } from 'marked'
 import { explainCode } from '../api/tutor'
+import ResultPanel from './ResultPanel.vue'
+
+marked.setOptions({ breaks: true })
 
 const languages = ['Java', 'Python', 'C', 'C++', 'JavaScript']
 const levels = [
@@ -34,42 +37,56 @@ async function submit() {
     loading.value = false
   }
 }
+
+function clearCode() {
+  code.value = ''
+}
 </script>
 
 <template>
   <div class="tab-layout">
-    <div class="form-column">
+    <div class="form-column card-block">
+      <div class="block-title">输入代码</div>
       <div class="field-row">
         <label>
-          编程语言
+          <span class="label-text">编程语言</span>
           <select v-model="language">
             <option v-for="lang in languages" :key="lang" :value="lang">{{ lang }}</option>
           </select>
         </label>
         <label>
-          解释深度
+          <span class="label-text">解释深度</span>
           <select v-model="level">
             <option v-for="item in levels" :key="item.value" :value="item.value">{{ item.label }}</option>
           </select>
         </label>
       </div>
 
-      <label class="block-label">
-        代码
-        <textarea v-model="code" rows="14" spellcheck="false" placeholder="粘贴或输入需要解释的代码..." />
+      <label class="block-label code-label">
+        <span class="label-text">源代码</span>
+        <div class="code-editor-wrap">
+          <textarea v-model="code" rows="14" spellcheck="false" placeholder="// 粘贴或输入需要解释的代码..." />
+        </div>
       </label>
 
-      <button class="primary-btn" :disabled="loading || !code.trim()" @click="submit">
-        {{ loading ? '分析中...' : '开始解释' }}
-      </button>
+      <div class="action-row">
+        <button class="primary-btn" :disabled="loading || !code.trim()" @click="submit">
+          <span v-if="loading" class="btn-spinner" />
+          {{ loading ? 'AI 分析中...' : '开始解释' }}
+        </button>
+        <button class="ghost-btn" type="button" :disabled="loading" @click="clearCode">清空</button>
+      </div>
     </div>
 
-    <div class="result-column">
-      <h3>解释结果</h3>
-      <div v-if="loading" class="state-box loading-box">正在调用智谱 AI 分析代码，请稍候...</div>
-      <div v-else-if="error" class="state-box error-box">{{ error }}</div>
-      <div v-else-if="resultHtml" class="markdown-body" v-html="resultHtml" />
-      <div v-else class="state-box empty-box">提交代码后，AI 将逐段解释其功能与核心概念。</div>
-    </div>
+    <ResultPanel
+      title="解释结果"
+      hint="AI 将按整体功能、逐段说明、核心概念展开"
+      :loading="loading"
+      loading-text="正在调用智谱 AI 分析代码..."
+      :error="error"
+      empty="提交代码后，这里会显示结构化的中文解释。"
+    >
+      <div class="markdown-body" v-html="resultHtml" />
+    </ResultPanel>
   </div>
 </template>

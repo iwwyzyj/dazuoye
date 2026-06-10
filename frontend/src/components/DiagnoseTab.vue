@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import { marked } from 'marked'
 import { diagnoseCode } from '../api/tutor'
+import ResultPanel from './ResultPanel.vue'
+
+marked.setOptions({ breaks: true })
 
 const languages = ['Java', 'Python', 'C', 'C++', 'JavaScript']
 
@@ -41,35 +44,50 @@ async function submit() {
 
 <template>
   <div class="tab-layout">
-    <div class="form-column">
+    <div class="form-column card-block">
+      <div class="block-title">报错信息</div>
       <label>
-        编程语言
+        <span class="label-text">编程语言</span>
         <select v-model="language">
           <option v-for="lang in languages" :key="lang" :value="lang">{{ lang }}</option>
         </select>
       </label>
 
-      <label class="block-label">
-        源代码
-        <textarea v-model="code" rows="10" spellcheck="false" placeholder="粘贴出错的代码..." />
+      <label class="block-label code-label">
+        <span class="label-text">源代码</span>
+        <div class="code-editor-wrap">
+          <textarea v-model="code" rows="9" spellcheck="false" placeholder="// 粘贴出错的代码..." />
+        </div>
       </label>
 
       <label class="block-label">
-        错误信息
-        <textarea v-model="errorMessage" rows="6" spellcheck="false" placeholder="粘贴编译器或运行时的报错信息..." />
+        <span class="label-text">错误信息</span>
+        <textarea
+          v-model="errorMessage"
+          class="error-input"
+          rows="5"
+          spellcheck="false"
+          placeholder="粘贴编译器或运行时的报错..."
+        />
       </label>
 
-      <button class="primary-btn" :disabled="loading || !code.trim() || !errorMessage.trim()" @click="submit">
-        {{ loading ? '诊断中...' : '开始诊断' }}
-      </button>
+      <div class="action-row">
+        <button class="primary-btn" :disabled="loading || !code.trim() || !errorMessage.trim()" @click="submit">
+          <span v-if="loading" class="btn-spinner" />
+          {{ loading ? '诊断中...' : '开始诊断' }}
+        </button>
+      </div>
     </div>
 
-    <div class="result-column">
-      <h3>诊断结果</h3>
-      <div v-if="loading" class="state-box loading-box">正在分析错误原因并生成修正建议...</div>
-      <div v-else-if="error" class="state-box error-box">{{ error }}</div>
-      <div v-else-if="resultHtml" class="markdown-body" v-html="resultHtml" />
-      <div v-else class="state-box empty-box">提供代码与报错信息后，系统将给出原因分析与修正方案。</div>
-    </div>
+    <ResultPanel
+      title="诊断结果"
+      hint="包含错误原因、修正方案与避坑建议"
+      :loading="loading"
+      loading-text="正在分析错误并生成修正建议..."
+      :error="error"
+      empty="提供代码和报错后，AI 会给出通俗易懂的修复指导。"
+    >
+      <div class="markdown-body" v-html="resultHtml" />
+    </ResultPanel>
   </div>
 </template>
