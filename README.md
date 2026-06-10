@@ -115,3 +115,35 @@ mvn -DskipTests package
 | `zhipu.api.model` | `glm-4-flash` | 模型名称（可改为 glm-4-plus 等） |
 | `zhipu.api.max-tokens` | `2048` | 最大输出 token |
 | `zhipu.api.timeout-seconds` | `90` | 请求超时秒数 |
+
+## 推送到 GitHub
+
+项目已初始化 Git 仓库。推送到 GitHub 的步骤：
+
+### 1. 登录 GitHub（首次）
+
+```powershell
+gh auth login
+```
+
+按提示选择 GitHub.com → HTTPS → 浏览器登录。
+
+### 2. 创建仓库并推送
+
+```powershell
+cd D:\程序\dazuoye
+gh repo create dazuoye --public --source=. --remote=origin --push
+```
+
+或手动方式：
+
+1. 打开 https://github.com/new 创建空仓库 `dazuoye`（不要勾选 README）
+2. 执行：
+
+```powershell
+cd D:\程序\dazuoye
+git remote add origin https://github.com/你的用户名/dazuoye.git
+git push -u origin main
+```
+
+> 请勿将 `ZHIPUAI_API_KEY` 等密钥提交到 GitHub，`.env` 已在 `.gitignore` 中忽略。
